@@ -11,7 +11,6 @@ def change_back_point(point):
     b = point % dim
     return a,b
 
-
 filename=str(sys.argv[1])
 with open(filename, 'rb') as f_in:
     global dim
@@ -62,6 +61,7 @@ for i in range(dim):
 def know_area(V,E,start,end):
     k = 0
     V_new = []
+    getback = []
     for i in range(V.shape[0]):
         for j in range(V.shape[0]):
             if V[i,j] != 0:
@@ -70,6 +70,7 @@ def know_area(V,E,start,end):
                     start_new = k
                 elif change_point(i,j) == end:
                     end_new = k
+                getback.append(change_point(i,j))
                 k += 1
     E_new = np.ndarray(shape=(len(V_new),len(V_new)),dtype=np.int32)
     E_new.fill(9999)
@@ -77,10 +78,10 @@ def know_area(V,E,start,end):
         for j in range(len(V_new)):
             if E[V_new[i],V_new[j]] == 1:
                 E_new[i,j] = 1
-    return V_new, E_new, start_new, end_new
+    return V_new, E_new, start_new, end_new, getback
 
 # Using Dijkstra Algorithm to solve the single_source shortest path
-def shortest(V,E,start,end):
+def shortest(V,E,start,end,getback):
     w = [ 999 for i in range(len(V))]
     w[start] = 0
     pre = [ 0 for i in range(len(V))]
@@ -101,97 +102,151 @@ def shortest(V,E,start,end):
                     pre[i] = u
     #for test
     
-    def printout(x,y,a,b,prelist):
-        if a == x and b == y:
+    def printout(start,end,prelist):
+        if start == end:
             pass
         else:
-            a_,b_=change_back_point(pre[change_point(a,b)])
-            prelist = printout(x,y,a_,b_,prelist)
-            
-            prelist.append(change_point(a,b))
-
+            new_end=pre[end]
+            prelist = printout(start,new_end,prelist)            
+            prelist.append(end)
         return prelist
     
-    prelist = []
-    start_x, start_y = change_back_point(start)
-    end_x, end_y = change_back_point(end)
-    prelist = printout(start_x, start_y, end_x, end_y, prelist)
-    return w[end], prelist
+    prelist = []    
+    prelist = printout(start, end, prelist)
+    prev = []
+    for i in range(len(prelist)):
+        prev.append(getback[prelist[i]]) 
+    return w[end], prev
 '''
 #code for test shortest
 V.fill(1)
 start = change_point(0,0)
-end = change_point(11,11)
-V_new, E_new, start_new, end_new = know_area(V,E,start,end)
-distance, prelist = shortest(V_new, E_new, start_new, end_new)
+end = change_point(6,6)
+V_new, E_new, start_new, end_new, getback = know_area(V,E,start,end)
+distance, prelist = shortest(V_new, E_new, start_new, end_new, getback)
 print(distance)
-for i in range(len(prelist)):
-	aa,bb=change_back_point(prelist[i])
-	print(aa,bb)
 '''
 
-# initialize
-now = change_point(0,0)
-now_x, now_y = change_back_point(now)
-V[now_x, now_y] = 2
-time1 = 0
-nextp = now
-# walk first time
+
+
 
 def reachgoal(now):
     return (now == change_point(dim/2,dim/2) or \
             now == change_point(dim/2-1,dim/2) or \
             now == change_point(dim/2,dim/2-1) or \
             now == change_point(dim/2-1,dim/2-1))
- 
 
-prev = []
-# first time
-while not reachgoal(now):
-
+def run(E,V,now,prev,time):
+    nextp = now
     for i in range(E.shape[1]):
         if E[now,i] == 1:
             x,y = change_back_point(i)
             if V[x,y] == 0:
                 V[x,y] = 1
-
-
-    mindis = 9999
-    
+    mindis = 9999    
+    newmindis = 9999
+    prelistmin = []
     for i in range(dim):
         for j in range(dim):
-            if V[i,j] == 1:                
-                V_new, E_new, start_new, end_new = know_area(V,E,now,change_point(i,j))
-                greydis, prelist = shortest(V_new, E_new, start_new, end_new)
-                if greydis < mindis:
+            if V[i,j] == 1:
+                newdis = abs(i + j - dim + 1)
+                V_new, E_new, start_new, end_new, getback = know_area(V,E,now,change_point(i,j))
+                greydis, prelist = shortest(V_new, E_new, start_new, end_new, getback)                
+
+                if newdis < newmindis:
+                    newmindis = newdis
                     mindis = greydis
                     prelistmin = prelist
                     nextp = change_point(i,j)
-
-
-    time1 += mindis
-    print('Total time', time1)
+                    
+    #test
+    '''
+    print('Total time', time)
     print('now',change_back_point(now))
     print('cost time', mindis)
+    print('next point',change_back_point(nextp))
+    for i in range(len(prelistmin)):
+        aa,bb=change_back_point(prelistmin[i])
+        print('steps',aa,bb)
+    '''
+
+    time += mindis
+    if time > 1000:
+    	print('error')
     now = nextp
     prev = prev + prelistmin
-    #
-    print('next point',change_back_point(now))
-    for i in range(len(prelistmin)):
-	    aa,bb=change_back_point(prelistmin[i])
-	    print('steps',aa,bb)
-
     now_x, now_y = change_back_point(now)
     V[now_x, now_y] = 2
-print(time1)
-#for i in range(len(prev)):
-#	aa,bb=change_back_point(prev[i])
-#	print(aa,bb)
+
+    return E,V,now,prev,time
+
+
+# initialize
+now = change_point(0,0)
+now_x, now_y = change_back_point(now)
+V[now_x, now_y] = 2
+time1 = 0
+prev1 = []
+# first time walk
+while not reachgoal(now):
+    E,V,now,prev1,time1 = run(E,V,now,prev1,time1)
+
+
+def printpre(prev):
+    for i in range(len(prev)):
+        aa,bb=change_back_point(prev[i])
+        print(aa,bb)
 
 time = time1
 
+#set all the goal to black
+V[dim/2,dim/2] = 2
+V[dim/2-1,dim/2] = 2
+V[dim/2,dim/2-1] = 2
+V[dim/2-1,dim/2-1] = 2
+
+def finded(E,V):
+    V_all = V[:,:]
+    V_all.fill(2)
+    V_new, E_new, start_new, end_new, getback = know_area(V_all,E,change_point(0,0),change_point(dim/2,dim/2))
+    short2, short2list = shortest(V_new, E_new, start_new, end_new, getback)
+    flag = True
+    for i in range(len(short2list)):
+    	a,b=change_back_point(short2list[i])
+    	if V[a,b] != 2:
+    		flag = False
+    		break
+    return flag
 
 
+    
+prev2 = []
+time2 = 0
+while not finded(E,V):
+    E,V,now,prev2,time2 = run(E,V,now,prev2,time2)
 
 
+prev3 = []
+time3 = 0
+V_new, E_new, start_new, end_new, getback = know_area(V,E,now,change_point(0,0))
+backdis, prev3 = shortest(V_new, E_new, start_new, end_new, getback)
+time3 = backdis
+now = change_point(0,0)
 
+
+time4 = 0
+V_new, E_new, start_new, end_new, getback = know_area(V,E,change_point(0,0),change_point(dim/2,dim/2))
+time4, shortest = shortest(V_new, E_new, start_new, end_new, getback)
+time4 *= 2
+
+print('time1',time1)
+print('time2',time2)
+print('time3',time3)
+print('time4',time4)
+print('score',(time1+time2+time3)/30.0+time4)
+
+
+V.fill(2)
+V_new, E_new, start_new, end_new, getback = know_area(V,E,change_point(0,0),change_point(dim/2,dim/2))
+timeshort, theshortest = shortest(V_new, E_new, start_new, end_new, getback)
+print('theroy shortest time', timeshort)
