@@ -229,10 +229,10 @@ backdis, prev3 = shortest(V_new, E_new, start_new, end_new, getback)
 time3 = backdis
 now = change_point(0,0)
 
-
+prev4 = []
 time4 = 0
 V_new, E_new, start_new, end_new, getback = know_area(V,E,change_point(0,0),change_point(dim/2,dim/2))
-time4, shortest = shortest(V_new, E_new, start_new, end_new, getback)
+time4, prev4 = shortest(V_new, E_new, start_new, end_new, getback)
 time4 *= 2
 
 print('time1',time1)
@@ -246,3 +246,4 @@ V.fill(2)
 V_new, E_new, start_new, end_new, getback = know_area(V,E,change_point(0,0),change_point(dim/2,dim/2))
 timeshort, theshortest = shortest(V_new, E_new, start_new, end_new, getback)
 print('theroy shortest time', timeshort)
+printpre(theshortest)
