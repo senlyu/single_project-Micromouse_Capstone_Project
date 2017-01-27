@@ -127,7 +127,10 @@ distance, prelist = shortest(V_new, E_new, start_new, end_new, getback)
 print(distance)
 '''
 
-
+def printpre(prev):
+    for i in range(len(prev)):
+        aa,bb=change_back_point(prev[i])
+        print(aa,bb)
 
 
 def reachgoal(now):
@@ -144,7 +147,8 @@ def run(E,V,now,prev,time):
             if V[x,y] == 0:
                 V[x,y] = 1
     mindis = 9999    
-    newmindis = 9999
+    newdis = 9999
+    mincordis = 9999
     prelistmin = []
     out = False
     for i in range(dim):
@@ -154,18 +158,21 @@ def run(E,V,now,prev,time):
             elif V[i,j] == 1:
                 if reachgoal(change_point(i,j)):
                     V_new, E_new, start_new, end_new, getback = know_area(V,E,now,change_point(i,j))
-                    greydis, prelist = shortest(V_new, E_new, start_new, end_new, getback)               
+                    greydis, prelist = shortest(V_new, E_new, start_new, end_new, getback)    
                     mindis = greydis
                     prelistmin = prelist
                     nextp = change_point(i,j)
                     out = True
-
                 else:
-                    newdis = abs(i-dim/2+0.5) + abs(j-dim/2+0.5)
                     V_new, E_new, start_new, end_new, getback = know_area(V,E,now,change_point(i,j))
-                    greydis, prelist = shortest(V_new, E_new, start_new, end_new, getback)                
-                    if newdis < newmindis:
-                        newmindis = newdis
+                    greydis, prelist = shortest(V_new, E_new, start_new, end_new, getback)
+                    cordis = abs(i-dim/2+0.5) + abs(j-dim/2+0.5)
+                    if greydis == mindis and cordis < mincordis:
+                        mincordis = cordis
+                        mindis = greydis
+                        prelistmin = prelist
+                        nextp = change_point(i,j)
+                    if greydis < mindis:
                         mindis = greydis
                         prelistmin = prelist
                         nextp = change_point(i,j)
@@ -202,12 +209,7 @@ prev1 = []
 while not reachgoal(now):
     E,V,now,prev1,time1 = run(E,V,now,prev1,time1)
 
-
-def printpre(prev):
-    for i in range(len(prev)):
-        aa,bb=change_back_point(prev[i])
-        print(aa,bb)
-
+printpre(prev1)
 time = time1
 
 #set all the goal to black
@@ -218,9 +220,11 @@ V[dim/2-1,dim/2-1] = 2
 
 def finded(E,V):
     V_all = V.copy()
+    
     V_all.fill(2)
     V_new, E_new, start_new, end_new, getback = know_area(V_all,E,change_point(0,0),change_point(dim/2,dim/2))
     short2, short2list = shortest(V_new, E_new, start_new, end_new, getback)
+    
     flag = True
     for i in range(len(short2list)):
     	a,b=change_back_point(short2list[i])
@@ -230,7 +234,12 @@ def finded(E,V):
     return flag
 
 
-    
+
+prev2 = []
+time2 = 0
+while not finded(E,V):
+    E,V,now,prev2,time2 = run(E,V,now,prev2,time2)
+
 
 prev3 = []
 time3 = 0
@@ -239,28 +248,21 @@ backdis, prev3 = shortest(V_new, E_new, start_new, end_new, getback)
 time3 = backdis
 now = change_point(0,0)
 
-
-
 prev4 = []
 time4 = 0
 V_new, E_new, start_new, end_new, getback = know_area(V,E,change_point(0,0),change_point(dim/2,dim/2))
 time4, prev4 = shortest(V_new, E_new, start_new, end_new, getback)
-time4 = time4 * 2
-
-
-
-
-
+time4 *= 2
 
 print('time1',time1)
+print('time2',time2)
 print('time3',time3)
 print('time4',time4)
-print('score',(time1+time3)/30.0+time4)
+print('score',(time1+time2+time3)/30.0+time4)
 
 
-
-V.fill(1)
-V_new, E_new, start_new, end_new, getback = know_area(V,E,change_point(0,0),change_point(dim/2,dim/2))
+V.fill(2)
+V_new, E_new, start_new, end_new, getback = know_area(V,E,change_point(0,0),change_point(dim/2-1,dim/2-1))
 timeshort, theshortest = shortest(V_new, E_new, start_new, end_new, getback)
 print('theroy shortest time', timeshort)
 printpre(theshortest)

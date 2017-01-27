@@ -207,7 +207,7 @@ def printpre(prev):
     for i in range(len(prev)):
         aa,bb=change_back_point(prev[i])
         print(aa,bb)
-
+printpre(prev1)
 time = time1
 
 #set all the goal to black
