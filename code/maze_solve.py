@@ -127,7 +127,10 @@ distance, prelist = shortest(V_new, E_new, start_new, end_new, getback)
 print(distance)
 '''
 
-
+def printpre(prev):
+    for i in range(len(prev)):
+        aa,bb=change_back_point(prev[i])
+        print(aa,bb)
 
 
 def reachgoal(now):
@@ -188,11 +191,6 @@ while not reachgoal(now):
     E,V,now,prev1,time1 = run(E,V,now,prev1,time1)
 
 
-def printpre(prev):
-    for i in range(len(prev)):
-        aa,bb=change_back_point(prev[i])
-        print(aa,bb)
-
 time = time1
 
 #set all the goal to black
@@ -202,10 +200,12 @@ V[dim/2,dim/2-1] = 2
 V[dim/2-1,dim/2-1] = 2
 
 def finded(E,V):
-    V_all = V[:,:]
+    V_all = V.copy()
+    
     V_all.fill(2)
     V_new, E_new, start_new, end_new, getback = know_area(V_all,E,change_point(0,0),change_point(dim/2,dim/2))
     short2, short2list = shortest(V_new, E_new, start_new, end_new, getback)
+    
     flag = True
     for i in range(len(short2list)):
     	a,b=change_back_point(short2list[i])
@@ -215,7 +215,7 @@ def finded(E,V):
     return flag
 
 
-    
+
 prev2 = []
 time2 = 0
 while not finded(E,V):

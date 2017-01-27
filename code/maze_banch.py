@@ -206,7 +206,7 @@ V[dim/2,dim/2-1] = 2
 V[dim/2-1,dim/2-1] = 2
 
 def finded(E,V):
-    V_all = V[:,:]
+    V_all = V.copy()
     V_all.fill(2)
     V_new, E_new, start_new, end_new, getback = know_area(V_all,E,change_point(0,0),change_point(dim/2,dim/2))
     short2, short2list = shortest(V_new, E_new, start_new, end_new, getback)
