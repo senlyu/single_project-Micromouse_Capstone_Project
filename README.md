@@ -2,7 +2,7 @@
 
 This is a capstone project for udacity machine learning engineer nonadegree.
 
-I design the whole project solution myself, which means I didn't use the start code given by udacity.
+I design the whole project solution myself, which means I didn't use the most start code given by udacity, but I used showmaze.py for a better visualization.
 
 The project contains:
 
