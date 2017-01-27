@@ -220,11 +220,6 @@ def finded(E,V):
 
 
     
-prev2 = []
-time2 = 0
-while not finded(E,V):
-    E,V,now,prev2,time2 = run(E,V,now,prev2,time2)
-
 
 prev3 = []
 time3 = 0
@@ -247,10 +242,9 @@ time4 = time4 * 2
 
 
 print('time1',time1)
-print('time2',time2)
 print('time3',time3)
 print('time4',time4)
-print('score',(time1+time2+time3)/30.0+time4)
+print('score',(time1+time3)/30.0+time4)
 
 
 
