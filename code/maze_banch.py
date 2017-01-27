@@ -149,7 +149,7 @@ def run(E,V,now,prev,time):
     for i in range(dim):
         for j in range(dim):
             if V[i,j] == 1:
-                newdis = abs(i + j - dim + 1)
+                newdis = abs(i-dim/2+0.5) + abs(j-dim/2+0.5)
                 V_new, E_new, start_new, end_new, getback = know_area(V,E,now,change_point(i,j))
                 greydis, prelist = shortest(V_new, E_new, start_new, end_new, getback)                
 
