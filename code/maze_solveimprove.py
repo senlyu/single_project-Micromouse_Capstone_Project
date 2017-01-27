@@ -206,10 +206,12 @@ V[now_x, now_y] = 2
 time1 = 0
 prev1 = []
 # first time walk
+import time as timee
+starttime=timee.time()
 while not reachgoal(now):
     E,V,now,prev1,time1 = run(E,V,now,prev1,time1)
 
-printpre(prev1)
+#printpre(prev1)
 time = time1
 
 #set all the goal to black
@@ -253,12 +255,13 @@ time4 = 0
 V_new, E_new, start_new, end_new, getback = know_area(V,E,change_point(0,0),change_point(dim/2,dim/2))
 time4, prev4 = shortest(V_new, E_new, start_new, end_new, getback)
 time4 *= 2
-
+endtime=timee.time()
 print('time1',time1)
 print('time2',time2)
 print('time3',time3)
 print('time4',time4)
 print('score',(time1+time2+time3)/30.0+time4)
+print('real time', endtime-starttime)
 
 
 V.fill(2)
